@@ -67,11 +67,9 @@ public class CustomerModel {
 
             // trolley.add(theProduct) — Product is appended to the end of the trolley.
             // To keep the trolley organized, add code here or call a method that:
-            //TODO
-            // 1. Merges items with the same product ID (combining their quantities).
-            // 2. Sorts the products in the trolley by product ID.
 
-            //Code to join duplicate Products in the form of quantity BY THOMAS MCMAHON DIXON
+
+            //Code to join duplicate Products in the form of quantity (BY THOMAS MCMAHON DIXON)
 
             boolean found = false;
 

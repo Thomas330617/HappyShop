@@ -19,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -28,6 +27,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
 /**
  * Some emojis used in the UI. If the emoji does not work on your OS,
  * please change them to their unique Unicode codes.
@@ -73,6 +75,30 @@ public class WarehouseView  {
      * This allows us to position other windows (like the History window or alert) relative to the Warehouse window.
      * It helps in keeping the UI layout consistent by placing new windows near the Warehouse window.
      */
+
+
+    private void playButtonSound() {
+
+
+        try {
+            //Code to access sound from resource sound directory
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/sounds/buttonClick.wav")
+            );
+
+            //Code to open the audio clip to be played (Thomas Mcmahon Dixon)
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+
+            //code to play the sound retrieved (Thomas Mcmahon Dixon)
+            clip.start();
+        } catch (Exception e) {
+            //If the sound fails, UI will still work (Thomas Mcmahon Dixon)
+            System.err.println("Error: Sound button not playing");
+        }
+    }
+
+
 
     //some elements in searchPage
     TextField tfSearchKeyword; //user typing in it
@@ -468,7 +494,11 @@ public class WarehouseView  {
     }
 
 
-    private void buttonClick(ActionEvent event)  {
+    private void buttonClick(ActionEvent event) {
+
+        //Allows button sound to be played in warehouse interface (Thomas Mcmahon Dixon)
+        playButtonSound();
+
         Button btn= (Button)event.getSource();
         String action = btn.getText();
 

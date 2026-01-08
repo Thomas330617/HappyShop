@@ -8,7 +8,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 
 /**
@@ -24,6 +26,34 @@ import java.io.IOException;
  */
 
 public class PickerView  {
+
+    private void playButtonSound() {
+
+
+        try {
+            //Code to access sound from resource sound directory
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/sounds/buttonClick.wav")
+            );
+
+            //Code to open the audio clip to be played (Thomas Mcmahon Dixon)
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+
+            //code to play the sound retrieved (Thomas Mcmahon Dixon)
+            clip.start();
+        } catch (Exception e) {
+            //If the sound fails, UI will still work (Thomas Mcmahon Dixon)
+            System.err.println("Error: Sound button not playing");
+        }
+    }
+
+
+
+
+
+
+
     public PickerController pickerController;
 
     private final int WIDTH = UIStyle.pickerWinWidth;
@@ -100,6 +130,10 @@ public class PickerView  {
     }
 
     private void buttonClicked(ActionEvent event) {
+
+        //Allows button sound to be played in picker interface (Thomas Mcmahon Dixon)
+        playButtonSound();
+
         Button button = (Button) event.getSource();
         String btnText = button.getText();
         try {

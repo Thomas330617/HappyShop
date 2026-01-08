@@ -14,9 +14,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.SQLException;
+import javax.print.DocFlavor;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
+import javax.swing.*;
 
 /**
  * The CustomerView is separated into two sections by a line :
@@ -39,6 +43,31 @@ public class CustomerView  {
 
     TextField tfId; //for user input on the search page. Made accessible so it can be accessed or modified by CustomerModel
     TextField tfName; //for user input on the search page. Made accessible so it can be accessed by CustomerModel
+
+    //Code to connect button sound method to buttons (Thomas Mcmahon Dixon)
+
+
+    //Code to play sound when buttons are clicked (THOMAS MCMAHON DIXON)
+    private void playButtonSound() {
+
+
+        try {
+            //Code to access sound from resource sound directory
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/sounds/buttonClick.wav")
+            );
+
+            //Code to open the audio clip to be played (Thomas Mcmahon Dixon)
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+
+            //code to play the sound retrieved (Thomas Mcmahon Dixon)
+            clip.start();
+        } catch (Exception e) {
+            //If the sound fails, UI will still work (Thomas Mcmahon Dixon)
+            System.err.println("Error: Sound button not playing");
+        }
+    }
 
     //four controllers needs updating when program going on
     private ImageView ivProduct; //image area in searchPage
@@ -172,6 +201,10 @@ public class CustomerView  {
 
 
     private void buttonClicked(ActionEvent event) {
+
+        //Allows button sound to be played in customer interface (Thomas Mcmahon Dixon)
+        playButtonSound();
+
         try{
             Button btn = (Button)event.getSource();
             String action = btn.getText();
