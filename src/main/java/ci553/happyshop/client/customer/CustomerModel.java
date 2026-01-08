@@ -70,8 +70,58 @@ public class CustomerModel {
             //TODO
             // 1. Merges items with the same product ID (combining their quantities).
             // 2. Sorts the products in the trolley by product ID.
-            trolley.add(theProduct);
-            displayTaTrolley = ProductListFormatter.buildString(trolley); //build a String for trolley so that we can show it
+
+            //Code to join duplicate Products in the form of quantity BY THOMAS MCMAHON DIXON
+
+            boolean found = false;
+
+            for (Product p : trolley) {
+
+
+
+
+                // Verfies if a product is already in the shopping trolley
+                if (p.getProductId().equals(theProduct.getProductId())) {
+                    p.setOrderedQuantity(p.getOrderedQuantity() + 1);
+
+                    //If there is already present product list
+                    //Code for setting it as one list item still with quantity
+                    found = true;
+
+                    //Breaking loop when same products are merged.
+                    break;
+                }
+            }
+
+            //Code for if a duplicate product was not found
+            //Also code for setting a product quantity to the value 1.
+
+            if (!found) {
+                theProduct.setOrderedQuantity(1);
+                trolley.add(theProduct);
+            }
+
+            //Code to organise products in ascending order through ID (Thomas Mcmahon Dixon)
+            trolley.sort((p1, p2) ->
+                    p1.getProductId().compareTo(p2.getProductId()));
+
+
+            //Displays quantities in trolley (Thomas Mcmahon Dixon)
+            StringBuilder trolleyDisplay = new StringBuilder();
+            for(Product p : trolley) {
+                trolleyDisplay.append(p.getProductId())
+                        .append(" - ")
+                        .append(p.getProductDescription())
+                        .append (" | Quantity:  ")
+                        .append(p.getOrderedQuantity())
+                        .append (" | unit Price: £")
+                        .append(String.format("%.2f", p.getUnitPrice()))
+                        .append (" | In Stock: ")
+                        .append(p.getStockQuantity())
+                        .append("\n");
+            }
+            displayTaTrolley = trolleyDisplay.toString();
+
         }
         else{
             displayLaSearchResult = "Please search for an available product before adding it to the trolley";
@@ -95,14 +145,60 @@ public class CustomerModel {
                 //get OrderHub and tell it to make a new Order
                 OrderHub orderHub =OrderHub.getOrderHub();
                 Order theOrder = orderHub.newOrder(trolley);
-                trolley.clear();
-                displayTaTrolley ="";
+
+
+
+
+                //Shows receipt with quantity text (Thomas Mcmahon Dixon)
+
+                StringBuilder receiptDisplay = new StringBuilder();
+                for (Product p : theOrder.getProductList()) {
+                    receiptDisplay.append(p.getProductId())
+                            .append(" - ")
+                            .append(p.getProductDescription())
+                            .append (" | Quantity:  ")
+                            .append(p.getOrderedQuantity())
+                            .append (" | unit Price: £")
+                            .append(String.format("%.2f", p.getUnitPrice()))
+                            .append("\n");
+                }
+
+                StringBuilder trolleyDisplay = new StringBuilder();
+                for(Product p : trolley) {
+                    trolleyDisplay.append(p.getProductId())
+                            .append(" - ")
+                            .append(p.getProductDescription())
+                            .append (" | Quantity:  ")
+                            .append(p.getOrderedQuantity())
+                            .append (" | unit Price: £")
+                            .append(String.format("%.2f", p.getUnitPrice()))
+                            .append (" | In Stock: ")
+                            .append(p.getStockQuantity())
+                            .append("\n");
+                }
+
+                //code to show quantity before it clears (Thomas Mcmahon Dixon)
+                displayTaTrolley = trolleyDisplay.toString();
                 displayTaReceipt = String.format(
-                        "Order_ID: %s\nOrdered_Date_Time: %s\n%s",
-                        theOrder.getOrderId(),
-                        theOrder.getOrderedDateTime(),
-                        ProductListFormatter.buildString(theOrder.getProductList())
-                );
+
+                        "order_ID: %s\nOrdered_Date_Time: %s\n%s",
+                                theOrder.getOrderId(),
+                                theOrder.getOrderedDateTime(),
+                                receiptDisplay.toString()
+                        );
+
+
+
+
+
+                updateView();
+
+                trolley.clear();
+
+                displayTaTrolley  = trolleyDisplay.toString(); //Ensures quantities are in receipts to
+
+
+
                 System.out.println(displayTaReceipt);
             }
             else{ // Some products have insufficient stock — build an error message to inform the customer
