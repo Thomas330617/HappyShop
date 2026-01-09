@@ -1,5 +1,5 @@
 package ci553.happyshop.client.customer;
-
+import ci553.happyshop.catalogue.Product; //To allow customer view to work with product information (Thomas Mcmahon Dixon)
 import ci553.happyshop.utility.UIStyle;
 import ci553.happyshop.utility.WinPosManager;
 import ci553.happyshop.utility.WindowBounds;
@@ -32,6 +32,12 @@ import javax.swing.*;
 
 public class CustomerView  {
     public CustomerController cusController;
+
+    public CustomerModel model;
+
+    public void setModel(CustomerModel model) {
+        this.model = model;
+    }
 
     private final int WIDTH = UIStyle.customerWinWidth;
     private final int HEIGHT = UIStyle.customerWinHeight;
@@ -72,7 +78,7 @@ public class CustomerView  {
     //four controllers needs updating when program going on
     private ImageView ivProduct; //image area in searchPage
     private Label lbProductInfo;//product text info in searchPage
-    private TextArea taTrolley; //in trolley Page
+    private VBox vbTrolleyItems; //was changed to represent each row as a grid row (Thomas Mcmahon Dixon)
     private TextArea taReceipt;//in receipt page
 
     // Holds a reference to this CustomerView window for future access and management
@@ -156,9 +162,9 @@ public class CustomerView  {
         Label laPageTitle = new Label("🛒🛒  Trolley 🛒🛒");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
-        taTrolley = new TextArea();
-        taTrolley.setEditable(false);
-        taTrolley.setPrefSize(WIDTH/2, HEIGHT-50);
+      vbTrolleyItems = new VBox(10);
+      vbTrolleyItems.setPrefSize(WIDTH/2, HEIGHT-50); //Changed to allow appropriate colum for interface (Thomas Mcmahon Dixon)
+      vbTrolleyItems.setStyle("-fx-padding: 10px;");
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
@@ -172,7 +178,7 @@ public class CustomerView  {
         hbBtns.setStyle("-fx-padding: 15px;");
         hbBtns.setAlignment(Pos.CENTER);
 
-        vbTrolleyPage = new VBox(15, laPageTitle, taTrolley, hbBtns);
+        vbTrolleyPage = new VBox(15, laPageTitle, vbTrolleyItems, hbBtns); //Edited to allow rows (Thomas Mcmahon Dixon)
         vbTrolleyPage.setPrefWidth(COLUMN_WIDTH);
         vbTrolleyPage.setAlignment(Pos.TOP_CENTER);
         vbTrolleyPage.setStyle("-fx-padding: 15px;");
@@ -224,11 +230,67 @@ public class CustomerView  {
     }
 
 
+    //Code to refresh trolley items and adds a spinner for increasing/decreasing quantity (Thomas Mcmahon Dixon)
+
+    public void refreshTrolleyView() {
+        vbTrolleyItems.getChildren().clear(); //Will erase any previous rows if needed (Thomas Mcmahon Dixon)
+        for (Product p : cusController.getCusModel().getTrolley()) {
+            //will retrieve trolley product information from the codebase models (Thomas Mcmahon Dixon)
+
+            //Code to  calculate the subtotal based on product increase (Thomas Mcmahon Dixon)
+
+            double subtotal = p.getUnitPrice() * p.getOrderedQuantity();
+
+            String productInfo = String.format(
+                    "%s - %s | Quantity: %d |   Subtotal: £%.2f",
+                    p.getProductId(),
+                    p.getProductDescription(),
+                    p.getOrderedQuantity(),
+                    subtotal
+            );
+
+
+            Label lbl = new Label(productInfo);
+
+            //Allows text to display clearly (Thomas Mcmahon Dixon)
+            lbl.setWrapText(true);
+            lbl.setMaxWidth(vbTrolleyItems.getPrefWidth() - 20);
+
+            //Spinners to allow quantity control
+
+            Spinner<Integer> spQty = new Spinner<>(1, p.getStockQuantity(), p.getOrderedQuantity());
+            spQty.setEditable(true); //Allows user to edit spinner controls (Thomas Mcmahon Dixon)
+
+
+            spQty.valueProperty().addListener((obs, oldVal, newVal) -> {
+                cusController.updateProductQuantity(p, newVal); //Will change receipts when edited again (Thomas Mcmahon Dixon)
+            });
+
+            //Button to allow customers to remove products they may not want from trolley (Thomas Mcmahon Dixon)
+
+            Button btnRemove = new Button("Remove item");
+            btnRemove.setStyle(UIStyle.buttonStyle); //Ensures button is styled with the interface
+            btnRemove.setMinWidth(120); //Ensures text fits in button
+            btnRemove.setOnAction(e -> {
+                cusController.removeProductFromTrolley(p);
+            });
+
+
+            //Ensure layout is correctly set (Thomas Mcmahon Dixon)
+
+            HBox row = new HBox(10, lbl, spQty, btnRemove);
+            row.setAlignment(Pos.CENTER_LEFT);
+            vbTrolleyItems.getChildren().add(row);
+        }
+    }
+
+
     public void update(String imageName, String searchResult, String trolley, String receipt) {
 
         ivProduct.setImage(new Image(imageName));
         lbProductInfo.setText(searchResult);
-        taTrolley.setText(trolley);
+        // Ensures trolley display is updated since it's edited to be interactive (Thomas Mcmahon Dixon)
+        refreshTrolleyView();
         if (!receipt.equals("")) {
             showTrolleyOrReceiptPage(vbReceiptPage);
             taReceipt.setText(receipt);

@@ -3,6 +3,9 @@ package ci553.happyshop.client.customer;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import ci553.happyshop.catalogue.Product;
+
+
 public class CustomerController {
     public CustomerModel cusModel;
 
@@ -26,4 +29,26 @@ public class CustomerController {
         }
     }
 
+    //Code for customerView to access model for effective collaboration with product items (Thomas Mcmahon Dixon)
+
+
+    public CustomerModel getCusModel() {
+        return cusModel;
+    }
+
+    //Code to allow customerView to update trolley with quantity spinners (Thomas Mcmahon Dixon)
+
+    public void updateTrolley() {
+
+        cusModel.cusView.refreshTrolleyView();
+
+    }
+
+    public void updateProductQuantity(Product product, int newQuantity) {
+        cusModel.updateProductQuantity(product, newQuantity);
+    }
+
+    public void removeProductFromTrolley(Product product) {
+        cusModel.removeProductFromTrolley(product);
+    }
 }

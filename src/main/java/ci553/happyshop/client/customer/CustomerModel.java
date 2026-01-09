@@ -129,6 +129,26 @@ public class CustomerModel {
         updateView();
     }
 
+    //Logic to update quantity based on spinner in customer view (Thomas Mcmahon Dixon)
+
+    public void updateProductQuantity(Product product, int newQuantity) {
+        product.setOrderedQuantity(newQuantity);
+        updateView();
+    }
+
+    //Logic for removing products from the trolley in interface when remove item is clicked
+    public void removeProductFromTrolley(Product product) {
+        trolley.remove(product);
+        updateView();
+    }
+
+
+
+
+
+
+
+
     void checkOut() throws IOException, SQLException {
         if(!trolley.isEmpty()){
             // Group the products in the trolley by productId to optimize stock checking
